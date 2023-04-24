@@ -2,34 +2,9 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls';
 let light;
 let spheres = [];
-let nutrient;
+let INTERSECTED;
 
-//classes
 
-//nutrient 1
-class Particle{
-    constructor(x, y, z) {
-        //position
-        this.x = x;
-        this.y = y;
-        this.z = z;
-
-        //colour
-        this.c;
-    }
-
-    show() {
-        this.geometry = new THREE.SphereGeometry(1, 64, 64);
-        this.material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-        this.sphere = new THREE.Mesh(this.geometry, this.material);
-
-        this.sphere.position.x = this.x;
-        this.sphere.position.y = this.y;
-        this.sphere.position.z = this.z;
-
-        scene.add(this.sphere);
-    }
-}
 
 // setup the camera
 const camera = new THREE.PerspectiveCamera(
@@ -57,27 +32,68 @@ light = new THREE.PointLight( 0xfffafe, 1, 100 );
 light.position.set(0, 10, 10);
 scene.add( light );
 
-nutrient = new Particle(0, 0, 0);
-console.log(nutrient)
 
-nutrient.show();
-
+// create raycaster and coordinates for mouse movement
 const pointer = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 
 const onMouseMove = (event) => {
+    // calculate pointer position in normalized device coordinates
+    // (-1 to +1) for both components
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    pointer.y = -(event.clientX / window.innerHeight) * 2 + 1;
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObjects(scene.children);
 
-    for (let i = 0; i < intersects.length; i++) {
-        console.log(intersects);
-    }
+   
+    // change colour if mouse is on object
+    if (intersects.length > 0) {
+        if ( INTERSECTED != intersects[ 0 ].object ) {
 
- 
-}
+            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+            INTERSECTED = intersects[ 0 ].object;
+            
+            //print out the info about the particle
+            console.log(intersects[0].object.userData.name);
+            console.log(intersects[0].object.userData.info);
+
+            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            INTERSECTED.material.emissive.setHex( 0xff0000 );
+            
+
+        }
+
+    } else {
+
+        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+        INTERSECTED = null;
+
+    }
+    
+  };
+
+const geometry = new THREE.SphereGeometry(1, 64, 64);
+const material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
+const sphere = new THREE.Mesh(geometry, material);
+sphere.position.set(0, 0, 0);
+scene.add(sphere);
+
+sphere.userData.nutrient = true;
+sphere.userData.name = 'invertibrates';
+sphere.userData.info = 'this is some info on this particle'
+
+const geometry2 = new THREE.SphereGeometry(1, 64, 64);
+const material2 = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
+const sphere2 = new THREE.Mesh(geometry2, material2);
+sphere2.position.set(5, 0, 0);
+scene.add(sphere2);
+
+sphere2.userData.nutrient = true;
+sphere2.userData.name = 'alpha';
+sphere2.userData.info = 'this is some info on this particle'
 
 // for (let x = -10; x <= 10; x += 5) {
 //     for (let z = -10; z <= 10; z += 5) {
@@ -98,15 +114,18 @@ const onMouseMove = (event) => {
 //     }
 // }
 
-window.addEventListener('resize', onWindowResize, 'mousemove', onMouseMove );
+window.addEventListener('resize', onWindowResize);
 
 
 
 function animate() {
 	requestAnimationFrame( animate );
-	renderer.render( scene, camera );
-}
 
+    
+	renderer.render( scene, camera );
+};
+window.addEventListener( 'pointermove', onMouseMove );
+// window.requestAnimationFrame(animate);
 animate();
 
 function onWindowResize() {
