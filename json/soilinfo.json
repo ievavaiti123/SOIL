@@ -1,0 +1,46 @@
+{
+    "contents": [
+        {
+            "year": "1998",
+            "type": "invertebrate",
+            "species": "Broad Taxa",
+            "amount": "4.63"
+        },
+
+        {
+            "year": "2007",
+            "type": "invertebrate",
+            "species": "Broad Taxa",
+            "amount": "3.87"
+        },
+
+        {
+            "year": "1998",
+            "type": "invertebrate",
+            "species": "Mite: Springtail",
+            "amount": "4.16"
+        },
+
+        {
+            "year": "2007",
+            "type": "invertebrate",
+            "species": "Mite: Springtail",
+            "amount": "8.41"
+        },
+
+        {
+            "year": "1998",
+            "type": "invertebrate",
+            "species": "Shannon Diversity",
+            "amount": "1.15"
+        },
+
+        {
+            "year": "2007",
+            "type": "invertebrate",
+            "species": "Shannon Diversity",
+            "amount": "0.78"
+        }
+    ]
+
+}

@@ -1,10 +1,20 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls';
 let light;
-let spheres = [];
 let INTERSECTED;
-
-
+let soil;
+let sphere;
+let sphereBB;
+let spheresBB = [];
+let collision;
+let spheres = [];
+let x1 = getRnd(-3, 3);
+let x2 = getRnd(-3, 3);
+// arrays of xyz coordinates
+let x = [];
+let y = [];
+let z = [];
+let x1_ = [];
 
 // setup the camera
 const camera = new THREE.PerspectiveCamera(
@@ -20,7 +30,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("sketch-container").appendChild( renderer.domElement );
 
-//controls
+//camera controls
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
@@ -37,6 +47,7 @@ scene.add( light );
 const pointer = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 
+// track mouse movement and intersection with objects
 const onMouseMove = (event) => {
     // calculate pointer position in normalized device coordinates
     // (-1 to +1) for both components
@@ -46,7 +57,6 @@ const onMouseMove = (event) => {
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObjects(scene.children);
 
-   
     // change colour if mouse is on object
     if (intersects.length > 0) {
         if ( INTERSECTED != intersects[ 0 ].object ) {
@@ -54,72 +64,181 @@ const onMouseMove = (event) => {
             if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
             INTERSECTED = intersects[ 0 ].object;
-            
             //print out the info about the particle
             console.log(intersects[0].object.userData.name);
             console.log(intersects[0].object.userData.info);
 
+            // change colour when mouse collides with object
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
             INTERSECTED.material.emissive.setHex( 0xff0000 );
             
-
         }
 
     } else {
 
+        // colour change back if not intersects
         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
         INTERSECTED = null;
 
-    }
+        }
     
   };
 
-const geometry = new THREE.SphereGeometry(1, 64, 64);
-const material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-const sphere = new THREE.Mesh(geometry, material);
-sphere.position.set(0, 0, 0);
-scene.add(sphere);
+  //load data file
+  fetch("/json/soilinfo.json").then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    
+    soil = data.contents;
+   
+    // draw the particles
+   drawSoil();
+  
+  }).catch(function(err) {
+    console.log(`Something went wrong: ${err}`);
+  });
 
-sphere.userData.nutrient = true;
-sphere.userData.name = 'invertibrates';
-sphere.userData.info = 'this is some info on this particle'
+  //generate random int https://www.w3schools.com/JS/js_random.asp
+  function getRnd(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+    
+ 
 
-const geometry2 = new THREE.SphereGeometry(1, 64, 64);
-const material2 = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-const sphere2 = new THREE.Mesh(geometry2, material2);
-sphere2.position.set(5, 0, 0);
-scene.add(sphere2);
+  
+// const cube1 = new THREE.Mesh(
+//     new THREE.BoxGeometry(1,1,1),
+//     new THREE.MeshPhongMaterial({color: 0xff0000})
+// );
+// cube1.position.set(x1, 0, 0);
 
-sphere2.userData.nutrient = true;
-sphere2.userData.name = 'alpha';
-sphere2.userData.info = 'this is some info on this particle'
+// let cube1BB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+// cube1BB.setFromObject(cube1);
+// console.log(cube1BB);
 
-// for (let x = -10; x <= 10; x += 5) {
-//     for (let z = -10; z <= 10; z += 5) {
-//         for (let y = -10; y <= 10; y += 5) {
-//         const geometry = new THREE.SphereGeometry(1, 64, 64);
-//         const material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-//         const sphere = new THREE.Mesh(geometry, material);
+// const ball1 = new THREE.Mesh(
+//     new THREE.SphereGeometry(1),
+//     new THREE.MeshPhongMaterial({color: 0xff14933})
+// );
+// ball1.position.set(x2,0,0);
 
-//         sphere.position.x = x;
-//         sphere.position.y = y;
-//         sphere.position.z = z;
+//   //ball bounding sphere:
+// let ball1BB = new THREE.Sphere(ball1.position, 1);
+// console.log(ball1BB)
 
-//         scene.add(sphere);
+// scene.add(ball1, cube1);
 
-//         spheres.push(sphere);
-//         }
+// collision = false;
+// //   scene.add(ball1);
 
+// // check for collisions of particles
+// function checkCollisions() {
+//     if(cube1BB.intersectsSphere(ball1BB)) {
+//         console.log("intersected");
+//         // animation1();
+//         collision = true
+//         if (collision == true){
+//             // x1 += x1
+//             if(x1 <= 0) {
+//             x1 -= 0.1;
+//             } else if (x1 >= 0.1) {
+//                 x1 += 0.1;
+//             }
+//             cube1.position.x = x1;
+//          }
+//     } else {
+//         collision = false
 //     }
 // }
+
+
+
+
+function drawSoil() {
+collision = false;
+let value;
+const geometry = new THREE.SphereGeometry(1, 64, 64);
+const material1 = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
+const material2 = new THREE.MeshStandardMaterial( { color: 0xf7a9a9 } );
+const material3 = new THREE.MeshStandardMaterial( { color: 0xc4f157 } );
+
+
+    for (let i=0; i<soil.length; i++) {
+        value = soil[i].amount;
+        let type = soil[i].type;
+        let species = soil[i].species;
+        let year = soil[i].year;
+        
+        
+
+        for (let j = 0; j < value; j ++) {
+            
+           x[j] = getRnd(-10, 10)
+           y[j] = getRnd(-10, 10)
+           z[j] = getRnd(-10, 10)
+            
+
+            if (type == "invertebrate" && species == "Broad Taxa" && year == "2007") {
+                
+                sphere = new THREE.Mesh(geometry, material1);
+                sphere.position.set(x[j], y[j], z[j]);
+                scene.add(sphere);
+
+                sphere.userData.nutrient = true;
+                sphere.userData.name = 'Broad Taxa';
+                sphere.userData.info = 'this is some info on this particle'
+
+        
+                
+            }
+
+           
+                
+
+           
+
+            if (type == "invertebrate" && species == "Shannon Diversity" && year == "2007") {
+                
+                const sphere = new THREE.Mesh(geometry, material2);
+                sphere.position.set(x[j], y[j], z[j]);
+                scene.add(sphere);
+
+                sphere.userData.nutrient = true;
+                sphere.userData.name = 'Shannon';
+                sphere.userData.info = 'this is some info on this particle'
+
+                
+            }
+
+            if (type == "invertebrate" && species == "Mite: Springtail" && year == "2007") {
+               
+                const sphere = new THREE.Mesh(geometry, material3);
+                sphere.position.set(x[j], y[j], z[j]);
+                scene.add(sphere);
+
+                sphere.userData.nutrient = true;
+                sphere.userData.name = 'Mite: Springtail';
+                sphere.userData.info = 'this is some info on this particle'
+            }
+        }
+    }
+
+
+}
+
+
+
 
 window.addEventListener('resize', onWindowResize);
 
 
 
+
 function animate() {
-	requestAnimationFrame( animate );
+
+requestAnimationFrame( animate );    
+
 
     
 	renderer.render( scene, camera );
