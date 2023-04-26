@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls';
+import {RGBELoader} from 'three/addons/loaders/RGBELoader.js'
+import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+
 let light;
 let INTERSECTED;
 let soil;
@@ -23,19 +26,79 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     2000
 );
-camera.position.set(-35, 15, 25);
+camera.position.set(-40, 10, -40);
+
+//create new scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
 
 //render and add to the canvas
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("sketch-container").appendChild( renderer.domElement );
 
+//load the css renderer
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+labelRenderer.domElement.style.pointerEvents = 'none'; // to allow oribt controls to pass
+document.body.appendChild(labelRenderer.domElement);
+
+// create the html structure for the labels
+const h2 = document.createElement('h2'); //for title
+const p = document.createElement('p'); //for info
+h2.className ='tooltip';
+p.className ='tooltip';
+const pContainer = document.createElement('div');
+pContainer.appendChild(h2)
+pContainer.appendChild(p)
+const cPointLabel = new CSS2DObject(pContainer);
+scene.add(cPointLabel);
+
+
 //camera controls
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
-//create new scene
-const scene = new THREE.Scene();
+
+
+
+//const cPointLabel = new CSS2DObject(pContainer);
+//scene.add(cPointLabel);
+
+  //load data file
+  fetch("/json/soilinfo.json").then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    
+    soil = data.contents;
+   
+    // draw the particles
+   drawSoil();
+  
+  }).catch(function(err) {
+    console.log(`Something went wrong: ${err}`);
+  });
+
+  //generate random int https://www.w3schools.com/JS/js_random.asp
+  function getRnd(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+
+// fix exposure and lighting of the HDR texture image
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.6;
+
+// load HDR texture image, sourced from https://www.hdri-hub.com/hdrishop/freesamples/freehdri/item/117-hdr-041-path-free
+const loader = new RGBELoader();
+loader.load('imgs/HDR_041_Path.hdr', function(texture){
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = texture;
+    scene.environment = texture;
+})
+
 
 // add light to see
 light = new THREE.PointLight( 0xfffafe, 1, 100 ); 
@@ -65,6 +128,19 @@ const onMouseMove = (event) => {
 
             INTERSECTED = intersects[ 0 ].object;
             //print out the info about the particle
+            let objName = intersects[0].object.userData.name;
+            let objInfo = intersects[0].object.userData.info;
+            
+            
+            h2.className = 'tooltip show';
+            h2.textContent = objName;
+
+            p.className = 'tooltip show';
+            p.textContent = objInfo;
+
+            
+
+
             console.log(intersects[0].object.userData.name);
             console.log(intersects[0].object.userData.info);
 
@@ -80,29 +156,13 @@ const onMouseMove = (event) => {
         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
         INTERSECTED = null;
-
+        p.className = 'tooltip hide';
+        h2.className = 'tooltip hide';
         }
     
   };
 
-  //load data file
-  fetch("/json/soilinfo.json").then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    
-    soil = data.contents;
-   
-    // draw the particles
-   drawSoil();
-  
-  }).catch(function(err) {
-    console.log(`Something went wrong: ${err}`);
-  });
 
-  //generate random int https://www.w3schools.com/JS/js_random.asp
-  function getRnd(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) ) + min;
-  }
     
  
 
@@ -158,10 +218,29 @@ const onMouseMove = (event) => {
 function drawSoil() {
 collision = false;
 let value;
-const geometry = new THREE.SphereGeometry(1, 64, 64);
-const material1 = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-const material2 = new THREE.MeshStandardMaterial( { color: 0xf7a9a9 } );
-const material3 = new THREE.MeshStandardMaterial( { color: 0xc4f157 } );
+const geometry = new THREE.SphereGeometry(2, 64, 64);
+const material1 = new THREE.MeshPhysicalMaterial( { 
+    roughness: 0.1,
+    metalness: 0.3,
+    transmission: 1,
+    transparent: 1,
+    opacity: 0.7,
+    color: 0xffff00 } );
+    //ior: 2.33;
+const material2 = new THREE.MeshPhysicalMaterial( { 
+    roughness: 0.1,
+    metalness: 0.2,
+    transmission: 1, 
+    transparent: 1,
+    opacity: 0.7,
+    color: 0xf7a9a9 } );
+const material3 = new THREE.MeshPhysicalMaterial( { 
+    roughness: 0.1,
+    metalness: 0.2,
+    transmission: 1,
+    transparent: 1,
+    opacity: 0.7,
+    color: 0xc4f157 } );
 
 
     for (let i=0; i<soil.length; i++) {
@@ -234,15 +313,17 @@ window.addEventListener('resize', onWindowResize);
 
 
 
-
+//animate or update
 function animate() {
 
-requestAnimationFrame( animate );    
+    requestAnimationFrame( animate );    
 
-
+    // update labels
+    labelRenderer.render(scene, camera);
     
 	renderer.render( scene, camera );
 };
+
 window.addEventListener( 'pointermove', onMouseMove );
 // window.requestAnimationFrame(animate);
 animate();
@@ -254,5 +335,8 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // update size of label
+    labelRenderer.setSize(this.window.innerWidth, this.window.innerHeight);
 
 }
