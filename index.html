@@ -19,8 +19,47 @@
         <script type="module" src="sketch.js"></script>
         
         <link rel="stylesheet" href="style.css">
+        
 	</head>
 	<body>
         <div id="sketch-container"></div>
+
+        <div class="container" id="container">
+            <div class="tooltip show" >
+            <p >
+                USER GUIDE: 
+                <br>
+                <br>
+                Navigation: 
+                <br>
+                XY: Mouse Drag
+                <br>
+                Zoom in/out: Mouse Scroll
+                <br>
+                <br>
+                Hover over the particles to view properties <br>
+                <br>
+                Toggle the slider to change year <br>
+            
+            </p>
+
+            </div>
+
+            <div class="slidecontainer">
+            <input type="range" min="0" max="100" value="100" class="slider" id="sliderYear">
+            <!-- <p>Value: <span id="demo"></span></p> -->
+          </div>
+          
+            <h2 id="name" class="important"></h2>
+
+            <p id="info"></p>
+
+
+        
+
+    
+          
+        </div>
+        
 	</body>
 </html>
