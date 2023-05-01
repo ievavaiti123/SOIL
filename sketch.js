@@ -38,6 +38,8 @@ camera.position.set(-40, 10, -40);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb);
 
+init();
+
 //render and add to the canvas
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -63,9 +65,9 @@ const s3 = document.getElementById('species3');
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
-
+function init() {
   //load data file
-  fetch("json/soilinfo.json").then(function(response) {
+  fetch("./json/soilinfo.json").then(function(response) {
     return response.json();
   }).then(function(data) {
     
@@ -77,11 +79,13 @@ controls.update();
   }).catch(function(err) {
     console.log(`Something went wrong: ${err}`);
   });
+}
 
   //generate random int https://www.w3schools.com/JS/js_random.asp
   function getRnd(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
   }
+
 
 // fix exposure and lighting of the HDR texture image
 renderer.outputEncoding = THREE.sRGBEncoding;
