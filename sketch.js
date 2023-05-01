@@ -65,7 +65,7 @@ controls.update();
 
 
   //load data file
-  fetch("/json/soilinfo.json").then(function(response) {
+  fetch("./json/soilinfo.json").then(function(response) {
     return response.json();
   }).then(function(data) {
     
