@@ -1,46 +1,58 @@
 {
     "contents": [
+        
+            {
+                "type": "invertebrate",
+                "amount07": "64.6",
+                "amount98": "45.7",
+                "info": "here is some info on this particle",
+                "color": "rgb(50, 150, 10)",
+                "types":
+                [
+                    {
+                        "species": "Broad Taxa",
+                        
+                        "amount": "3.87"
+                    }
+                ]
+            },
+        
         {
-            "year": "1998",
-            "type": "invertebrate",
-            "species": "Broad Taxa",
-            "amount": "4.63"
+            "type": "Carbon Concentration",
+            "amount07": "59.18",
+            "amount98": "60.02",
+            "info": "here is some info on this particle",
+            "color": "rgb(0, 100, 150)"
+            
         },
 
         {
-            "year": "2007",
-            "type": "invertebrate",
-            "species": "Broad Taxa",
-            "amount": "3.87"
+            "type": "Olsen-P",
+            "amount07": "35.21",
+            "amount98": "43.66",
+            "info": "here is some info on this particle",
+            "color": "rgb(200, 100, 0)"
+            
         },
 
         {
-            "year": "1998",
-            "type": "invertebrate",
-            "species": "Mite: Springtail",
-            "amount": "4.16"
+            "type": "Nitrogen",
+            "amount07": "0.45",
+            "amount98": "0.47",
+            "info": "here is some info on this particle",
+            "color": "rgb(200, 80, 100)"
+            
         },
 
         {
-            "year": "2007",
-            "type": "invertebrate",
-            "species": "Mite: Springtail",
-            "amount": "8.41"
-        },
-
-        {
-            "year": "1998",
-            "type": "invertebrate",
-            "species": "Shannon Diversity",
-            "amount": "1.15"
-        },
-
-        {
-            "year": "2007",
-            "type": "invertebrate",
-            "species": "Shannon Diversity",
-            "amount": "0.78"
+            "type": "Moisture",
+            "amount07": "33.72",
+            "amount98": "32.11",
+            "info": "here is some info on this particle",
+            "color": "rgb(0, 80, 250)"
+            
         }
+
     ]
 
 }
