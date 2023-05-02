@@ -1,15 +1,29 @@
-h2 {
-    font-size: 150%;
-}
-
-p {
-    font-size: 110%;
-}
-
 body { 
     margin: 0; 
     font-family: monospace;
 }
+
+h1 {
+    font-size: 200%;
+    color:rgb(255, 255, 255)
+}
+
+h2 {
+    font-size: 150%;
+    color:rgb(205, 205, 205)
+}
+
+h3 {
+    font-size: 150%;
+    color:rgb(205, 205, 205)
+}
+
+p {
+    font-size: 110%;
+    color:rgb(182, 182, 182)
+}
+
+
 
 #sketch-container{
     position:fixed;
@@ -21,9 +35,9 @@ body {
     position: relative;
     background:rgb(0, 0, 0);
     opacity: 0.7;
-    width: 25%;
-    height: 500px;
-    left: 75%;
+    width: 30%;
+    height: 100%;
+    left: 70%;
     
     
     
@@ -48,16 +62,6 @@ body {
     color: rgb(123, 228, 183);
 }
 
-/* .tooltip::after {
-    position: absolute;
-    content: '';
-    width: 20px;
-    height: 20px;
-    top: 90%;
-    left: 50%;
-    transform: rotateZ(45deg) translateX(-50); 
-    z-index: -1;
-} */
 
 .show  {
     opacity: 1;
@@ -103,4 +107,90 @@ body {
     background: #04AA6D;
     cursor: pointer;
     
+  }
+
+  .popup .overlay {
+    position:fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background:rgba(255, 0.7);
+    z-index:1;
+    display: none;
+  }
+
+  .popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform:translate(-50%, -50%) scale(0.1);
+    background: rgba(0, 0, 0, 0.7);
+    width: 450px;
+    height: 400px;
+    z-index:2;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    visibility: hidden;
+    transition: transform 0.4s;
+  }
+
+  .open-popup {
+    visibility: visible;
+    transform:translate(-50%, -50%) scale(1);
+  }
+
+  .popup button {
+    width: 50%;
+    margin-top: 10px;
+    background-color: #04AA6D;
+    border: 0;
+    border-radius: 2px;
+    color: black;
+    padding: 10px 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .popup .close-btn {
+    position: absolute;
+    cursor: pointer;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.5);
+    color: rgba(0, 0, 0, 1);;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+  }
+
+
+
+  .btn {
+    background-color: #04AA6D;
+    font-weight: 600;
+    font-size: 15px;
+    border: 0;
+    margin-top: 10px;
+    border-radius: 2px;
+    color: black;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    /* font-size: 16px; */
+    min-width: 150px;
+    cursor: pointer;
+  }
+
+ 
+
+
+  .btn:hover {
+    background-color: #98dcc3;
   }

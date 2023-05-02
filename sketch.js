@@ -6,6 +6,7 @@ import {RGBELoader} from 'three/addons/loaders/RGBELoader.js'
 let light;
 let material1, material2, material3, material4;
 let isOn = false;
+let yearDisp;
 
 let  type, info,  c;
 
@@ -13,7 +14,8 @@ let soil;
 let sphere;
 
 let collision;
-
+let a;
+let objects = [];
 
 // arrays of xyz coordinates
 let x = [];
@@ -51,17 +53,19 @@ document.getElementById("sketch-container").appendChild( renderer.domElement );
 // create slider and map it
 let slider = document.getElementById("sliderYear");
 let output = slider.value
+let year = document.getElementById("yearVal");
+
+yearDisp = Math.round(convertRange(output, [0, 100], [1998, 2007]));
+year.innerHTML = yearDisp;
 let yearseven = convertRange(output, [0, 100], [0, 0.7]);
 let year98 = convertRange(output, [0, 100], [0.7, 0]);
 
 // html variables
 const h = document.getElementById('name');
-const p2 = document.getElementById('type');
+// const p2 = document.getElementById('type');
 const p = document.getElementById('info');
 
-const s1 = document.getElementById('species1');
-const s2 = document.getElementById('species2');
-const s3 = document.getElementById('species3');
+
 
 //camera controls
 let controls = new OrbitControls(camera, renderer.domElement);
@@ -108,13 +112,10 @@ light = new THREE.PointLight( 0xfffafe, 1, 100 );
 light.position.set(0, 10, 10);
 scene.add( light );
 
-let a;
-let objects = [];
+
 // create raycaster and coordinates for mouse movement
 const pointer = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
-
-
 
 
 // track mouse movement and intersection with objects
@@ -129,22 +130,22 @@ function onMouseMove(event) {
 function onHover() {
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObjects(scene.children);
-
+    
     // change colour if mouse is on object
     if (intersects.length > 0) {
 
-        
+        if (isOn == false) {
         for (a = 0; a < intersects.length; a++) {
  
-        //check if mousew intersects with object
+        //check if mouse intersects with object
         objects.push(intersects[a].object)
         intersects[a].object.currentHex = intersects[a].object.material.emissive.getHex();
-        intersects[a].object.material.emissive.setHex( 0xff0000 );
+        intersects[a].object.material.emissive.setHex( 0xffcc00 );
 
         //get particle name
         let objName = intersects[a].object.userData.name;
         let objInfo = intersects[a].object.userData.info;
-        let objType = intersects[a].object.userData.type;
+        // let objType = intersects[a].object.userData.type;
        
 
         // only show names of objects that can be seen
@@ -153,15 +154,16 @@ function onHover() {
         h.textContent = objName;
         p.className = 'tooltip show importantP';
         p.textContent = objInfo;
-        p2.className = 'tooltip show importantP';
-        p2.textContent = objType;
+   
         }
        
         }
+    }
         
     }
     else {
       
+        if (isOn == false) {
         for (let b = 0; b < objects.length; b++) {
             //reset object colour and array
             if ( objects[b] ) objects[b].material.emissive.setHex( 0x00000);
@@ -169,30 +171,30 @@ function onHover() {
 
             //hide text when mouse not on object
             p.className = 'tooltip hide';
-            p2.className = 'tooltip hide';
+            // p2.className = 'tooltip hide';
             h.className = 'tooltip hide';
 
         }
+    }
 
     }
 
   };
 
+// click on particles to view
 function onClick() {
  
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObjects(scene.children);
-    // let isOn = false;
     // change colour if mouse is on object
     if (intersects.length > 0) {
         
         if (isOn == false) {
             isOn = true;
-            console.log("clicked ON");
-
+          
             for (a = 0; a < intersects.length; a++) {
  
-                //check if mousew intersects with object
+                //check if mouse intersects with object
                 objects.push(intersects[a].object)
                 intersects[a].object.currentHex = intersects[a].object.material.emissive.getHex();
                 intersects[a].object.material.emissive.setHex( 0xff0000 );
@@ -200,7 +202,7 @@ function onClick() {
                 //get particle name
                 let objName = intersects[a].object.userData.name;
                 let objInfo = intersects[a].object.userData.info;
-                let objType = intersects[a].object.userData.type;
+                // let objType = intersects[a].object.userData.type;
                
         
                 // only show names of objects that can be seen
@@ -209,15 +211,14 @@ function onClick() {
                 h.textContent = objName;
                 p.className = 'tooltip show importantP';
                 p.textContent = objInfo;
-                p2.className = 'tooltip show importantP';
-                p2.textContent = objType;
+  
                 }
                
                 }
             
         } else if (isOn == true){
             isOn = false;
-            console.log("clicked OFF");
+        
             for (let b = 0; b < objects.length; b++) {
                 //reset object colour and array
                 if ( objects[b] ) objects[b].material.emissive.setHex( 0x00000);
@@ -225,7 +226,7 @@ function onClick() {
     
                 //hide text when mouse not on object
                 p.className = 'tooltip hide';
-                p2.className = 'tooltip hide';
+                // p2.className = 'tooltip hide';
                 h.className = 'tooltip hide';
     
             }
@@ -355,10 +356,13 @@ function animate() {
     if (checkT == false) {
         onHover();
     }
-     
+  
     //change opacity on input of slider
     slider.oninput = function() {
+        
         output = this.value;
+        yearDisp = Math.round(convertRange(output, [0, 100], [1998, 2007]));
+        year.innerHTML = yearDisp;
         yearseven = convertRange(output, [0, 100], [0, 0.7]);
         year98 = convertRange(output, [0, 100], [0.7, 0]);
         

@@ -24,37 +24,50 @@
 	<body>
         <div id="sketch-container"></div>
 
+        <div class="popup" id="popup">
+            <div class="content1">
+                
+                <h1>USER GUIDE:</h1>
+                <h3>Desktop Users:</h3>
+                <p>Rotate with mouse drag, Zoom with scroll <br>
+                Hover with mouse to examine particles<br>
+                Click on particle to hold</p>
+                <h3>Tablet/Phone Users</h3>
+                <p>Drag to rotate, Pinch to zoom<br>
+                Tap on particle to view properties</p>
+                <button type="button" class="btn" onclick="closePopup()">Close</button>
+            </div>
+        </div>
+        <script>let popup = document.getElementById("popup");
+
+            function openPopup() {
+                popup.classList.add("open-popup");
+            }
+            function closePopup() {
+                popup.classList.remove("open-popup");
+            }</script>
+        
         <div class="container" id="container">
             <div class="tooltip show" >
-            <p >
-                USER GUIDE: 
-                <br>
-                <br>
-                Navigation: 
-                <br>
-                XY: Mouse Drag
-                <br>
-                Zoom in/out: Mouse Scroll
-                <br>
-                <br>
-                Hover over the particles to view properties <br>
-                <br>
-                Toggle the slider to change year <br>
-            
-            </p>
+                <button type="submit" class="btn" onclick="openPopup()">Show User Guide</button>
+                
 
             </div>
 
             <div class="slidecontainer">
+                <p >
+            
+                    Toggle the slider to change year
+                
+                </p>
             <input type="range" min="0" max="100" value="100" class="slider" id="sliderYear">
-            <!-- <p>Value: <span id="demo"></span></p> -->
+            <p>Year: <span id="yearVal"></span></p>
+            <p>Location: Blackheath</p>
           </div>
           
             <h2 id="name" class="important"></h2>
-            <p id="type"></p>
-            <p id="species1"></p>
-            <p id="species2"></p>
-            <p id="species3"></p>
+            <!-- <p id="type"></p> -->
+           
             <p id="info"></p>
 
 
