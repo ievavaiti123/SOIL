@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls';
 import {RGBELoader} from 'three/addons/loaders/RGBELoader.js'
 
+//data sourced from : Henrys, P.A.; Keith, A.M.; Robinson, D.A.; Emmett, B.A. (2012). Model estimates of topsoil invertebrates [Countryside Survey] NERC Environmental Information Data Centre. https://doi.org/10.5285/f19de821-a436-4b28-95f6-b7287ef0bf15
+
 
 let light;
 let material1, material2, material3, material4;
